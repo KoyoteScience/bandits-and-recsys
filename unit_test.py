@@ -20,6 +20,7 @@ number_of_extra_users = 2
 
 data = Data()
 if movielens:
+    # data comes from https://www.kaggle.com/grouplens/movielens-20m-dataset
     number_of_embedding_dimensions = 50
     data.tag = pandas.read_csv('~/Downloads/movie_lens_kaggle/tag.csv', nrows=nrows_read)
     data.genome_tags = pandas.read_csv('~/Downloads/movie_lens_kaggle/genome_tags.csv', nrows=nrows_read)
