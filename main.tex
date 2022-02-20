@@ -1,88 +1,68 @@
-
-%% The first command in your LaTeX source must be the \documentclass command.
-%% \documentclass[manuscript,review,anonymous]{acmart}
-\documentclass[manuscript, nonacm, screen=true]{acmart}
-\geometry{twoside=false,bottom=100pt}
-%% \documentclass{article}
-%% \documentclass[margin=1in]{article}
-%% NOTE that a single column version may be required for 
-%% submission and peer review. This can be done by changing
-%% the \doucmentclass[...]{acmart} in this template to 
-%% \documentclass[manuscript,screen]{acmart}
-%% 
-
-%% Numbered references, preferred, without acmart
-%% \usepackage[numbers]{natbib}
-
-%% \BibTeX command to typeset BibTeX logo in the docs
-% \AtBeginDocument{%
-%   \providecommand\BibTeX{{%
-%     \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
-
-\copyrightyear{2022}
-\acmYear{2022}
-\settopmatter{printacmref=false}
-
-%% Uncommenting the next command will enable author year style.
-%% \citestyle{acmauthoryear}
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts} 
+\usepackage{graphicx}
+\usepackage{biblatex} 
+\usepackage{authblk}
+\usepackage{mathtools}
+\usepackage{xurl} %see https://tex.stackexchange.com/questions/23394/url-linebreak-in-footnote for why we use xurl to get line breaks instead of regular url
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
+\usepackage{cancel}
+\usepackage{enumitem}
+\usepackage[bb=boondox]{mathalfa}
+\addbibresource{sample-base.bib}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \usepackage{fancyhdr}
 \usepackage{textcomp}
-\usepackage{hyperref}
-%% \textsuperscript{TM} or \texttrademark
-\begin{document}
+
+\setlist[description]{leftmargin=2cm,labelindent=1cm}
+
+\lstdefinestyle{mystyle}{
+    % backgroundcolor=\color{backcolour},   
+    % commentstyle=\color{codegreen},
+    % keywordstyle=\color{magenta},
+    % numberstyle=\tiny\color{codegray},
+    % stringstyle=\color{codepurple},
+    % basicstyle=\ttfamily\footnotesize,
+    % breakatwhitespace=false,         
+    % breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    % numbers=left,                    
+    % numbersep=5pt,                  
+    % showspaces=false,                
+    % showstringspaces=false,
+    % showtabs=false,                  
+    tabsize=2,
+    frame=single,
+}
+\lstset{style=mystyle}
 
 \title{The Koyote Science, LLC, Approach to Personalization and Recommender Systems}
+\author[1]{Douglas Mason}
+\affil[1]{\href{http://www.koyotescience.com}{Koyote Science, LLC}}
+\date{February 2022}
 
-%% "authornote" and "authornotemark" commands
-%% used to denote shared contribution to the research.
-\author{Douglas Mason}
-\email{douglas@koyotescience.com}
-\affiliation{%
-  \institution{Koyote Science, LLC}
-  \streetaddress{}
-  \city{San Francisco}
-  \state{California}
-  \country{USA}
-  \postcode{94114}
-}
-
-% \author{Dan Cote}
-% \email{dan@koyotescience.com}
-% \affiliation{%
-%   \institution{Koyote Science, LLC}
-%   \streetaddress{}
-%   \city{San Francisco}
-%   \state{California}
-%   \country{USA}
-%   \postcode{94114}
-% }
-\renewcommand{\shortauthors}{The Koyote Science, LLC, Approach to Personalization and Recommender Systems} % and Cote
-
-
-
-%% A "teaser" image appears between the author and affiliation
-%% information and the body of the document, and typically spans the
-%% page.
-% \begin{teaserfigure}
-%   \includegraphics[width=\textwidth]{canonical_image_fret_ferret.png}
-%   \caption{Example user interface for identifying intervals visually on the guitar fretboard, with the questions determined by a contextual multi-armed bandit aiming for moderate-to-high difficulty and that has been partially trained.}
-%   \Description{Computer interface with one range selector for input}
-%   \label{fig:teaser}
-% \end{teaserfigure}
-
-
-\begin{abstract}
-\\
-\textbf{TL;DR:} We cover the history of personalization and recommender systems, the current state-of-the-art mathematical formulation, and how we hope to incorporate reinforcement learning to push it further to make amazingly responsive products that suss out a user's intentions in real-time.
-\end{abstract}
+\begin{document}
 
 \maketitle
 
+\tableofcontents
+
 \pagestyle{fancy}
 % \fancyhf{}
-\cfoot{\\ \hfill \break
-\includegraphics[scale=0.15,align=c]{koyote_science_logo.png}
+\cfoot{\\
+\\
+\includegraphics[scale=0.15,valign=c]{koyote_science_logo.png}
 }
+\lhead{Page \thepage}
+\rhead{Section \thesection}
+
+\section{Introduction}
+
+Personalization and recommender systems present unique challenges that can be addressed with intelligent bandit design. These algorithms require less feature-engineering, and use embeddings to represents users, queries, and items, making them the go-to for products with a history of interactions to build upon. When working with new users or when substantial historical data has not been recorded, bandits can help collect this data efficiently. Moreover, while recommender systems have evolved to enormously complex extremes to accommodate signals as quickly as possible, bandits paired with recommender systems can capture user intent in the moment with little additional effort, providing a tremendous improvement over traditional approaches. This document outlines the recommender system problem, how bandits have been used to address issues in the past, and how we would do it differently.
 
 \section{History and background}
 
@@ -124,28 +104,43 @@ The model parameters $\boldsymbol{\theta}$ and $\boldsymbol{\phi}$ are optimized
 \end{itemize}
 
 \begin{figure}[h]
+\begin{center}
   \includegraphics[width=0.75\linewidth]{two_tower.png}
+  \end{center}
   \caption{The user (query) and item features can be fed into a two-tower deep neural network to learn embeddings and interaction features among each type of feature (user and item) separately. The dot product is then used to model interactions between the user and the item, and the learned embeddings can be used in any k-nearest neighbors retrieval system to find similar users or items. This flexible design allows for a variety of side-chain information, such as time-of-day, to be used in either the user tower, item tower, or both. Source: \url{https://research.google/pubs/pub50257/}}
   \label{fig:two_tower}
 \end{figure}
 
 \begin{figure}[h]
+\begin{center}
   \includegraphics[width=0.75\linewidth]{youtube_figure.png}
+  \end{center}
   \caption{The YouTube implementation encodes an enormous amount of side-chain information. Source: \url{https://research.google/pubs/pub45530/}}
   \label{fig:you_tube}
 \end{figure}
 
 Further elaborations include triplet losses for learning relative rankings rather than explicit predictions of $y$\cite{learning_to_rank_recsys} which is implemented with LightFM\cite{lightFM}, and deep neural networks to learn expressive representations in well-known implementations such as YouTube's\cite{youtube_recsys} (Figure \ref{fig:you_tube}) and the "two tower DNN" design\cite{google_recsys_two_tower} (Figure \ref{fig:two_tower}). In general, the more expressive the model becomes, the easier it is to program in an auto-differentiation package like JAX compared to using pre-built APIs like Keras to allow for fine-tuned control.
 
-\section{Implicit feedback and Negative sampling}
+\section{Implicit feedback and negative sampling}
 
-Since our samples will only include interactions that occurred, they do not account for interactions that do not. This can result in poor model performance, notably the phenomenon of "folding" by which distinct clusters of data will be incorrectly assigned similar embedding values\cite{folding_without_negative_sampling_recsys}. When our goal is to predict click-through-rates rather than scalar regression (such as movie ratings), but we only record implicit feedback (the clicks), \textbf{negative sampling} is employed by which we augment our dataset with a sampling of items that the user did \textit{not} interact with.  Various methods are employed along this front, the most common and easiest-to-use being random negative sampling. However, similar to off-policy reinforcement learning, we can sample our negatives from any non-random distribution we like so long as we properly account for inverse probability weighting and importance sampling\cite{bengio_negative_sampling}. Alternatively, the user can be explicitly defined by the target-weighted sum of item embeddings that they have interacted with to avoid this issue, although this requires using sparse matrix libraries and limits the number of items that can be modeled.
+When our goal is to predict click-through-rates rather than scalar regression (such as movie ratings), but we only record \textbf{implicit feedback} (the clicks), this can impose new challenges when the number of items is large. For a small number of items, a multi-class model can predict over all items and compute the softmax explicitly, training one interaction at a time and assuming all other items were not interacted with. For multi-label models, we can collect all interactions and non-interactions for a user and train them simultaneously. 
 
-Negative sampling is necessary for models where we we apply a softmax to our prediction probabilities, that is, we treat each interaction as a win against a pool of other candidates, forcing the model to rank the likelihood of the current interaction against the non-interactions. However, instead of treating this as a  multi-class single-label classification problem, we can also train just to predict the interaction probability between a given user and item without the softmax function forcing a ranking among items in the model. This turns our problem into a single-value binary classification or regression problem. Once a substantial amount of interaction data has come in, the softmax approach will outperform the alternative formulation for the same reason that multi-task models learn better embeddings and improve model performance in general, and similarly, a multi-class \textit{multi-label} model using a final sigmoid activation layer over all items will perform in between. But the greater performance comes at a cost: handling missing information or heterogenous data becomes substantially more difficult since all items have to be ranked concurrently against each other. For this reason, cold-start problems often ignore the softmax function and rely on a more traditional bandit formulation.
+However, when the number of items grows, we cannot model each item in our outputs due to resource constraints and are forced to use models that accept items as input vectors rather than as the set of discrete outputs. This leaves us with a multi-class softmax model that trains one interaction at a time, or a binary classification model that only predicts for a given user and item. However, if we only train on the interactions,  we must beware of the phenomenon of "folding", by which distinct clusters of data will be incorrectly assigned similar embedding values\cite{folding_without_negative_sampling_recsys}. To address this issue, \textbf{negative sampling} is employed by which we sample the non-interactions rather than use all of them. 
 
-\section{Traditional incorporation of reinforcement learning}
+The negative samples can be trained explicitly for binary classification models, at which point the problem is identical to managing class imbalance, i.e., when the distribution of your training data differs from the data you infer on. Unfortunately, this approach introduces new hyperparmaters governing how we obtain the negative samples and in what proportion to include them, which are then tuned to optimize some classification goal. In our case, our goal is some metric of the recommender system, such as top-k ranking. Incidentally, these considerations amount to the importance sampling ratio used in off-policy evaluation in reinforcement learning, since we are attempting to bridge the differences between the the training data distribution the model is trained on and the inference data distribution the model will be applied on. Notably, when we only record data for one class (the interactions), we have no way to determine the importance sampling ratios a-priori, which is why we are left hyperparameters to tune.
 
-To bring \textbf{reinforcement learning} into the mix, we first consider how it would be added to either of the above methods individually. For collaborative filtering alone, the predominant approach is to use a Bayesian implementation of matrix factorization called \textit{probabilistic matrix factorization}\cite{PMF_probabilistic_matrix_factorization,BPMF_bayesian_probabilistic_matrix_factorization} to create \textit{interactive collaborative filtering}\cite{interactive_CF,interactive_CF2,interactive_CF3} implementations which balance exploration and exploitation in data collection for the collaborative filtering signal. It remains unclear if similar approaches can be used for factorization machines. Meanwhile, content-based filtering extends to reinforcement learning trivially. 
+For multi-class models, while negative samples can be included in the training data as in binary classification, they can also just be included in the normalization denominator, i.e., the partition function, in the per-sample likelihood \begin{equation}\mathcal{L}_\text{softmax}(\mathbf{a},\mathbf{c},\boldsymbol{\theta})=\frac{\exp(f(\mathbf{a},\mathbf{c},\boldsymbol{\theta}))}{\sum_{\mathbf{a}'}\exp(f(\mathbf{a}',\mathbf{c},\boldsymbol{\theta}))}
+\end{equation}. The loss function \begin{equation}L(\boldsymbol{\theta})=-\frac{1}{N}\sum_{\mathbf{a},\mathbf{c}}\log\mathcal{L}_\text{softmax}(\mathbf{a},\mathbf{c},\boldsymbol{\theta})\end{equation}then averages over all actions (items) and contexts (users) in our dataset of size $N$. We don't need to explicitly train the negative samples to shift their embeddings because the gradients of the loss function related to the softmax denominator will do that for us.
+
+Various methods are employed for selecting the negative samples, the most common and easiest-to-use being random negative sampling. However, similar to off-policy reinforcement learning, we can sample our negatives from any non-random distribution we like so long as we properly account for inverse probability weighting and importance sampling\cite{bengio_negative_sampling}. Alternatively, the user can be explicitly defined by the target-weighted sum of item embeddings that they have interacted with to avoid this issue, although this requires using sparse matrix libraries and limits the number of items that can be modeled.
+
+Negative sampling is necessary for models where we we apply a softmax to our prediction probabilities, that is, we treat each interaction as a win against a pool of other candidates, forcing the model to rank the likelihood of the current interaction against the non-interactions. However, instead of treating this as a multi-class single-label classification problem, we can also train just to predict the interaction probability between a given user and item without the softmax function forcing a ranking among items in the model. This turns our problem into a single-value binary classification or regression problem. Once a substantial amount of interaction data has come in, the softmax approach will outperform the alternative formulation for the same reason that multi-task models learn better embeddings and improve model performance in general, and similarly, a multi-class \textit{multi-label} model using a final sigmoid activation layer over all items will perform in between. But the greater performance comes at a cost: handling missing information or heterogenous data becomes substantially more difficult since all items have to be ranked concurrently against each other. For this reason, cold-start problems often ignore the softmax function and rely on a more traditional bandit formulation.
+
+Note that when the number of items becomes large, performing predictions for ranking becomes a substantial computational overhead. To address this, nearest-neighbor algorithms\cite{nearest_neighbors} like K-D tree and ball tree can be used to reduce the search time by searching for item embeddings that are closest to the query embedding since these will have the largest dot-products. Note that this algorithm requires the two-tower design depicted in Figure \ref{fig:two_tower}, to measure the distances between the final query and item embeddings, as well as direct access to the final embedding layers rather than building off of the model predictions, which can make the engineering a bit harder.
+
+\section{Reinforcement learning for recommender systems}
+
+\textbf{Reinforcement learning} has been extensively explored in the literature as a way of improving recommender systems\cite{rl_recsy, rl_recsys2, rl_recsys3}. First, we consider how it would be added to either of the above methods individually. For collaborative filtering alone, the predominant approach is to use a Bayesian implementation of matrix factorization called \textit{probabilistic matrix factorization}\cite{PMF_probabilistic_matrix_factorization,BPMF_bayesian_probabilistic_matrix_factorization} to create \textit{interactive collaborative filtering}\cite{interactive_CF,interactive_CF2,interactive_CF3} implementations which balance exploration and exploitation in data collection for the collaborative filtering signal. It remains unclear if similar approaches can be used for factorization machines. Meanwhile, content-based filtering extends to reinforcement learning trivially. 
 
 With the deep learning formulation, it is possible to combine all three approaches satisfyingly into one formalism since it treats collaborative filtering like a content-based filtering problem. The question remains how to capture prediction uncertainty to drive RL policies and make the exploration-exploitation trade-off possible, which is what probabilistic matrix factorization solved for the classical model. You can either employ an epsilon-greedy or softmax policy based on static predictions (poor performance), or use bootstrapped ensembles for Thompson sampling\cite{randomized_prior_functions, bootstrap_DQN, thompson_sampling} which incurs greater training costs but zero latency issues for the customer. This is our preferred method because it has been shown to outperform others in many contexts\cite{thompson_sampling1, thompson_sampling2, thompson_sampling3}. Other proposals, such as MC-dropout\cite{monte_carlo_dropout} and Bayes-by-backprop\cite{bayes_by_backprop}, have not yet been proven effective or accurate\cite{risk_versus_uncertainty}
 
@@ -220,11 +215,7 @@ Note that for the first tunable parameter, selections are still limited by the p
 %%
 %% The next two lines define the bibliography style to be used, and
 %% the bibliography file.
-\bibliographystyle{ACM-Reference-Format}
-\bibliography{sample-base}
 
 
+\printbibliography
 \end{document}
-\endinput
-%%
-%% End of file `sample-sigconf.tex'.
