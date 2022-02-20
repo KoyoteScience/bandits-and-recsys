@@ -5,8 +5,8 @@ authors:
 - family-names: Mason
   given-names: Douglas
   orcid: "https://orcid.org/0000-0000-0000-0000"
-title: "The Koyote Science, LLC Approach to Personalization and Recommender Systems"
+title: "The Koyote Science, LLC, Approach to Personalization and Recommender Systems"
 version: 1.0.0
 doi: 10.5281/zenodo.5828879
-date-released: 2021-09-21
-url: "https://github.com/KoyoteScience/GP-BLR"
+date-released: 2022-02-20
+url: "https://github.com/KoyoteScience/bandits-and-recsys"
